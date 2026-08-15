@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sZ+kau61x/0=",
+  "dgSpecHash": "5SAYgWMg+9E=",
   "success": true,
-  "projectFilePath": "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\TenkaiMenu.csproj",
+  "projectFilePath": "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\TenkaiMenu.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Nabil\\.nuget\\packages\\amongus.gamelibs.steam\\2026.6.5\\amongus.gamelibs.steam.2026.6.5.nupkg.sha512",
     "C:\\Users\\Nabil\\.nuget\\packages\\asmresolver\\6.0.0-beta.1\\asmresolver.6.0.0-beta.1.nupkg.sha512",

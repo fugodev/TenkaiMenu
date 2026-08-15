@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("all play and no cheats makes among us a dull game")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("3.2.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("3.2.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("3.2.0+2d9a0c1e1af5ed93fd164a299923e3caac4f2423")]
 [assembly: System.Reflection.AssemblyProductAttribute("TenkaiMenu")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TenkaiMenu")]
 [assembly: System.Reflection.AssemblyVersionAttribute("3.2.0.0")]

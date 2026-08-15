@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\TenkaiMenu.csproj": {}
+    "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\TenkaiMenu.csproj": {}
   },
   "projects": {
-    "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\TenkaiMenu.csproj": {
+    "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\TenkaiMenu.csproj": {
       "version": "3.2.0",
       "restore": {
-        "projectUniqueName": "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\TenkaiMenu.csproj",
+        "projectUniqueName": "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\TenkaiMenu.csproj",
         "projectName": "TenkaiMenu",
-        "projectPath": "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\TenkaiMenu.csproj",
+        "projectPath": "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\TenkaiMenu.csproj",
         "packagesPath": "C:\\Users\\Nabil\\.nuget\\packages\\",
-        "outputPath": "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\src\\obj\\",
+        "outputPath": "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\src\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "E:\\Workplace\\TenkaiMenu-project\\TenkaiMenu-main\\NuGet.Config",
+          "C:\\Users\\Nabil\\Documents\\Git Clone\\TenkaiMenu\\NuGet.Config",
           "C:\\Users\\Nabil\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
