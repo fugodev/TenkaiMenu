@@ -1,0 +1,10 @@
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\bin\Release\net6.0\TenkaiMenu.deps.json
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\bin\Release\net6.0\TenkaiMenu.dll
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.csproj.AssemblyReference.cache
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.GeneratedMSBuildEditorConfig.editorconfig
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.AssemblyInfoInputs.cache
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.AssemblyInfo.cs
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.csproj.CoreCompileInputs.cache
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\TenkaiMenu.dll
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\refint\TenkaiMenu.dll
+E:\Workplace\TenkaiMenu-project\TenkaiMenu-main\src\obj\Release\net6.0\ref\TenkaiMenu.dll

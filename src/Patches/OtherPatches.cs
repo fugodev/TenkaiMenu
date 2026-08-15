@@ -1,0 +1,368 @@
+using HarmonyLib;
+using AmongUs.Data;
+using AmongUs.Data.Player;
+using AmongUs.GameOptions;
+using UnityEngine;
+using System;
+using System.Security.Cryptography;
+using InnerNet;
+using System.Collections.Generic;
+
+namespace TenkaiMenu;
+
+[HarmonyPatch(typeof(Constants), nameof(Constants.GetPlatformData))]
+public static class Constants_GetPlatformData
+{
+    // Postfix patch of Constants.GetPlatformData to spoof the user's platform type
+    public static void Postfix(ref PlatformSpecificData __result)
+    {
+        if (Utils.StringToPlatformType(TenkaiMenu.spoofPlatform.Value, out Platforms? platformType))
+        {
+            __result = new PlatformSpecificData
+            {
+                Platform = (Platforms)platformType,
+                PlatformName = Constants.GetPlatformName()
+            };
+        }
+    }
+}
+
+[HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
+public static class FreeChatInputField_UpdateCharCount
+{
+    // Postfix patch of FreeChatInputField.UpdateCharCount to change how charCountText displays
+    public static void Postfix(FreeChatInputField __instance)
+    {
+        // Only works if CheatToggles.longerMsgs is enabled
+        if (!CheatToggles.longerMessages) return;
+
+        // Update charCountText to account for longer characterLimit
+        int length = __instance.textArea.text.Length;
+        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+
+        if (length < 90) // Under 75%
+        {
+            __instance.charCountText.color = Color.black;
+        }
+        else if (length < 120) // Under 100%
+        {
+            __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
+        }
+        else // Over or equal to 100%
+        {
+            __instance.charCountText.color = Color.red;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(ChatBubble), nameof(ChatBubble.SetName))]
+public static class ChatBubble_SetName
+{
+    public static void Postfix(ChatBubble __instance)
+	{
+        TenkaiESP.ChatNametags(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(SystemInfo), nameof(SystemInfo.deviceUniqueIdentifier), MethodType.Getter)]
+public static class SystemInfo_deviceUniqueIdentifier_Getter
+{
+    // Postfix patch of SystemInfo.deviceUniqueIdentifier Getter method
+    // Made to hide the user's real unique deviceId by generating a random fake one
+    public static void Postfix(ref string __result)
+    {
+        if (!TenkaiMenu.spoofDeviceId.Value) return;
+
+        var bytes = new byte[16];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(bytes);
+        }
+
+        __result = BitConverter.ToString(bytes).Replace("-", "").ToLower();
+    }
+}
+
+[HarmonyPatch(typeof(VersionShower), nameof(VersionShower.Start))]
+public static class VersionShower_Start
+{
+    // Postfix patch of VersionShower.Start to show TenkaiMenu version
+    public static void Postfix(VersionShower __instance)
+    {
+        if (TenkaiMenu.inStealthMode || TenkaiMenu.isPanicked) return;
+
+        if (TenkaiMenu.supportedAU.Contains(Application.version)) // Checks if Among Us version is supported
+        {
+            __instance.text.text =  $"TenkaiMenu v{TenkaiMenu.TenkaiVersion} (v{Application.version})"; // Supported
+        }
+        else
+        {
+            __instance.text.text =  $"TenkaiMenu v{TenkaiMenu.TenkaiVersion} (<color=red>v{Application.version}</color>)"; // Unsupported
+        }
+    }
+}
+
+[HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
+public static class PingTracker_Update
+{
+    // Postfix patch of PingTracker.Update to show TenkaiMenu authors and colored ping text
+    public static void Postfix(PingTracker __instance)
+    {
+        if (TenkaiMenu.inStealthMode)
+        {
+            __instance.text.alignment = TMPro.TextAlignmentOptions.TopLeft;
+
+            return;
+        }
+
+        __instance.text.alignment = TMPro.TextAlignmentOptions.Center;
+
+        int ping = Utils.GetPing();
+        string pingText = Utils.GetColoredPingText($"PING: {ping} ms", ping);
+
+        string TenkaiMenuTitle = Utils.GetGradientText("TenkaiMenu", new Color(1f, 0.15f, 0.15f), new Color(1f, 0.5f, 0.5f), Time.time * 0.25f);
+        string byText = "<color=#FFFFFFFF> by </color>";
+        string fugodevTitle = Utils.GetGradientText("fugodev", new Color(1f, 0.85f, 0.1f), new Color(1f, 0.55f, 0f), Time.time * 0.25f);
+        string titleText = TenkaiMenuTitle + byText + fugodevTitle;
+
+        if (AmongUsClient.Instance.IsGameStarted)
+        {
+            __instance.aspectPosition.DistanceFromEdge = new Vector3(-0.21f, 0.50f, 0f);
+
+            __instance.text.text = $"{titleText} ~ {pingText}";
+
+            return;
+        }
+
+        __instance.text.text = $"{titleText}\n{pingText}";
+
+    }
+}
+
+[HarmonyPatch(typeof(DisconnectPopup), nameof(DisconnectPopup.DoShow))]
+public static class DisconnectPopup_DoShow
+{
+    // Postfix patch of DisconnectPopup.DoShow to copy lobby code to clipboard on disconnect
+    public static void Postfix(DisconnectPopup __instance)
+    {
+        if (!CheatToggles.copyLobbyCodeOnDisconnect) return;
+
+        GUIUtility.systemCopyBuffer = AmongUsClient_OnGameJoined.lastGameIdString;
+
+        __instance.SetText(__instance._textArea.text + "\n\n<size=60%>Lobby code has been copied to the clipboard</size>");
+    }
+}
+
+[HarmonyPatch(typeof(PlayerBanData), nameof(PlayerBanData.BanMinutesLeft), MethodType.Getter)]
+public static class PlayerBanData_BanMinutesLeft_Getter
+{
+    // Postfix patch of PlayerBanData.BanMinutesLeft Getter method to remove disconnect penalty
+    public static void Postfix(PlayerBanData __instance, ref int __result)
+    {
+        if (!CheatToggles.avoidPenalties) return;
+
+        __instance.BanPoints = 0f; // Removes all BanPoints
+        __result = 0; // Removes all BanMinutes
+    }
+}
+
+[HarmonyPatch(typeof(FullAccount), nameof(FullAccount.CanSetCustomName))]
+public static class FullAccount_CanSetCustomName
+{
+    // Prefix patch of FullAccount.CanSetCustomName to allow the usage of custom names
+    public static void Prefix(ref bool canSetName)
+    {
+        if (CheatToggles.unlockFeatures)
+        {
+            canSetName = true;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(AccountManager), nameof(AccountManager.CanPlayOnline))]
+public static class AccountManager_CanPlayOnline
+{
+    // Prefix patch of AccountManager.CanPlayOnline to allow online games
+    public static void Postfix(ref bool __result)
+    {
+        if (CheatToggles.unlockFeatures)
+        {
+            __result = true;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.JoinGame))]
+public static class InnerNetClient_JoinGame
+{
+    // Prefix patch of InnerNetClient.JoinGame to allow online games
+    public static void Prefix()
+    {
+        if (CheatToggles.unlockFeatures)
+        {
+            DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.LoggedIn;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
+public static class GameManager_CheckTaskCompletion
+{
+    // Prefix patch of GameManager.CheckTaskCompletion to prevent a running game from ending
+    public static bool Prefix(ref bool __result)
+    {
+        if (!CheatToggles.noGameEnd) return true;
+
+        __result = false;
+
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(Mushroom), nameof(Mushroom.FixedUpdate))]
+public static class Mushroom_FixedUpdate
+{
+    public static void Postfix(Mushroom __instance)
+    {
+        TenkaiESP.SporeCloudVision(__instance);
+    }
+}
+
+// Found here: https://github.com/g0aty/SickoMenu/blob/main/hooks/PlainDoor.cpp
+[HarmonyPatch(typeof(DoorBreakerGame), nameof(DoorBreakerGame.Start))]
+public static class DoorBreakerGame_Start
+{
+    // Prefix patch of DoorBreakerGame.Start to automatically open a door when the player interacts with it
+    public static bool Prefix(DoorBreakerGame __instance)
+    {
+        if (!CheatToggles.autoOpenDoorsOnUse) return true;
+
+        DoorsHandler.OpenDoor(__instance.MyDoor);
+        __instance.MyDoor.SetDoorway(true);
+        __instance.Close();
+
+        return false;
+    }
+}
+
+// Found here: https://github.com/g0aty/SickoMenu/blob/main/hooks/PlainDoor.cpp
+[HarmonyPatch(typeof(DoorCardSwipeGame), nameof(DoorCardSwipeGame.Begin))]
+public static class DoorCardSwipeGame_Begin
+{
+    // Prefix patch of DoorCardSwipeGame.Begin to automatically open a door when the player interacts with it
+    public static bool Prefix(DoorCardSwipeGame __instance)
+    {
+        if (!CheatToggles.autoOpenDoorsOnUse) return true;
+
+        DoorsHandler.OpenDoor(__instance.MyDoor);
+        __instance.MyDoor.SetDoorway(true);
+        __instance.Close();
+
+        return false;
+    }
+}
+
+// Found here: https://github.com/g0aty/SickoMenu/blob/main/hooks/PlainDoor.cpp
+[HarmonyPatch(typeof(MushroomDoorSabotageMinigame), nameof(MushroomDoorSabotageMinigame.Begin))]
+public static class MushroomDoorSabotageMinigame_Begin
+{
+    // Prefix patch of MushroomDoorSabotageMinigame.Begin to automatically open a door when the player interacts with it
+    public static bool Prefix(MushroomDoorSabotageMinigame __instance)
+    {
+        if (!CheatToggles.autoOpenDoorsOnUse) return true;
+
+        __instance.FixDoorAndCloseMinigame();
+
+        return false;
+    }
+}
+
+// Found here: https://github.com/g0aty/SickoMenu/blob/main/hooks/LobbyBehaviour.cpp
+[HarmonyPatch(typeof(GameContainer), nameof(GameContainer.SetupGameInfo))]
+public static class GameContainer_SetupGameInfo
+{
+    // Postfix patch of GameContainer.SetupGameInfo to show structured, high-contrast lobby metrics
+    public static void Postfix(GameContainer __instance)
+    {
+        if (!CheatToggles.seeLobbyInfo) return;
+        if (__instance == null || __instance.gameListing == null || __instance.capacity == null) return;
+
+        // The Crewmate icon gets aligned properly with this
+        const string separator = "<#0000>000000000000000</color>";
+
+        var trueHostName = __instance.gameListing.TrueHostName;
+        var age = __instance.gameListing.Age;
+        var lobbyTime = $"Age: {age / 60}:{(age % 60 < 10 ? "0" : "")}{age % 60}";
+        var platform = Utils.PlatformTypeToString(__instance.gameListing.Platform);
+        var lobbyCode = GameCode.IntToGameName(__instance.gameListing.GameId);
+
+        // Hyper-Neon Rebrand Layout Configurations
+        // Line 1: Host Name (White) + Platform Tag (Neon Magenta, inheriting parent size to stay normal)
+        // Line 2: Player Capacity Count (Vanilla)
+        // Line 3: Lobby Code (Electric Cyan)  |  Lobby Age (Muted Sky Blue)
+        string infoDisplay = $"<size=40%>{separator}\n" +
+                             $"<color=#FFFFFF>{trueHostName}</color> <color=#FF007A>[{platform}]</color>\n" +
+                             $"{__instance.capacity.text}\n" +
+                             $"<color=#00F0FF>{lobbyCode}</color>  |  <color=#7DD3FC>{lobbyTime}</color>";
+
+        // Safely extracts game rule configurations and appends them cleanly at the bottom container boundary
+        if (__instance.gameListing.Options != null)
+        {
+            int impostorCount = __instance.gameListing.Options.NumImpostors;
+            
+            // Explicitly cast '1' to FloatOptionNames enum to resolve CS1503
+            float killCooldown = __instance.gameListing.Options.GetFloat((FloatOptionNames)1); 
+
+            // Line 4: Game Ruleset Configs (Toxic Lime Green)
+            infoDisplay += $"\n<color=#0dfc61>Impostors: {impostorCount}  -  Kill CD: {killCooldown}s</color>";
+        }
+
+        infoDisplay += $"\n{separator}</size>";
+        
+        __instance.capacity.text = infoDisplay;
+    }
+}
+
+[HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]
+public static class BanMenu_SetVisible
+{
+    // Prefix patch of BanMenu.SetVisible to always show kick and ban buttons as host
+    public static bool Prefix(BanMenu __instance, bool show)
+    {
+        if (!Utils.isHost) return true;
+
+        show &= PlayerControl.LocalPlayer && PlayerControl.LocalPlayer.Data != null;
+
+        __instance.BanButton.gameObject.SetActive(true);
+        __instance.KickButton.gameObject.SetActive(true);
+        __instance.MenuButton.gameObject.SetActive(show);
+
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(IGameOptionsExtensions), nameof(IGameOptionsExtensions.GetAdjustedNumImpostors))]
+public static class IGameOptionsExtensions_GetAdjustedNumImpostors
+{
+    // Prefix patch of IGameOptionsExtensions.GetAdjustedNumImpostors to remove impostor limits
+    public static bool Prefix(IGameOptions __instance, ref int __result)
+    {
+        if (!CheatToggles.noOptionsLimits) return true;
+
+        __result = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPurchasesData), nameof(PlayerPurchasesData.GetPurchase))]
+public static class PlayerPurchasesData_GetPurchase
+{
+    // Postfix patch of PlayerPurchasesData.GetPurchase to unlock all cosmetics
+    public static void Postfix(ref bool __result)
+    {
+        if (!CheatToggles.freeCosmetics) return;
+
+        __result = true;
+    }
+}
