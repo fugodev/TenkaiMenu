@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/fugodev/TenkaiMenu/blob/main/Img/Picsart_26-06-04_19-00-33-239-Picsart-AiImageEnhancer.jpg?raw=true">
+  <img src="https://github.com/fugodev/TenkaiMenu/blob/main/assets/TenkaiMenuBanner.png?raw=true">
 </p>
 
 <p align="center">
