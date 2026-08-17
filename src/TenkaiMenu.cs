@@ -29,7 +29,7 @@ public partial class TenkaiMenu : BasePlugin
     public static AssignRoleUI assignRoleUI;
     public static KeybindListener keybindListener;
 
-    public static string TenkaiVersion = "1.0.0";
+    public static string TenkaiVersion = "1.0.1";
     public static List<string> supportedAU = new List<string> { "2026.6.5" };
     public static bool isPanicked = false;
     public static bool inStealthMode = false;
