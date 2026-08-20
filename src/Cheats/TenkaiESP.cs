@@ -85,33 +85,38 @@ public static class TenkaiESP
         {
             foreach (var playerState in meetingHud.playerStates)
             {
-                // Fetch the NetworkedPlayerInfo of each playerState
                 var data = GameData.Instance.GetPlayerById(playerState.TargetPlayerId);
-
-                if (data.IsNull() || data.Disconnected || data.Outfits[PlayerOutfitType.Default].IsNull()) continue;
-
-                // Update the player's nametag appropriately
-                playerState.NameText.text = Utils.GetNameTag(data, data.DefaultOutfit.PlayerName);
-
-                // Move and resize the nametag to prevent it overlapping with colorblind text
-                if (CheatToggles.seeRoles && CheatToggles.seePlayerInfo)
-                {
-                    playerState.NameText.transform.localPosition = new Vector3(0.33f, 0.08f, 0f);
-                    playerState.NameText.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-                }
-                else if (CheatToggles.seeRoles || CheatToggles.seePlayerInfo)
-                {
-                    playerState.NameText.transform.localPosition = new Vector3(0.3384f, 0.1125f, -0.1f);
-                    playerState.NameText.transform.localScale = new Vector3(0.9f, 1f, 1f);
-                }
-                else
-                {
-                    // Reset the position and scale of the nametag to default values (they're kinda weird but whatever)
-                    playerState.NameText.transform.localPosition = new Vector3(0.3384f, 0.0311f, -0.1f);
-                    playerState.NameText.transform.localScale = new Vector3(0.9f, 1f, 1f);
-                }
+                ApplyMeetingNametag(playerState, data);
             }
-        } catch { }
+        }
+        catch { }
+    }
+
+    public static void ApplyMeetingNametag(PlayerVoteArea playerState, NetworkedPlayerInfo data)
+    {
+        try
+        {
+            if (playerState == null || data.IsNull() || data.Disconnected || data.Outfits[PlayerOutfitType.Default].IsNull()) return;
+
+            playerState.NameText.text = Utils.GetNameTag(data, data.DefaultOutfit.PlayerName);
+
+            if (CheatToggles.seeRoles && CheatToggles.seePlayerInfo)
+            {
+                playerState.NameText.transform.localPosition = new Vector3(0.33f, 0.08f, 0f);
+                playerState.NameText.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+            }
+            else if (CheatToggles.seeRoles || CheatToggles.seePlayerInfo)
+            {
+                playerState.NameText.transform.localPosition = new Vector3(0.3384f, 0.1125f, -0.1f);
+                playerState.NameText.transform.localScale = new Vector3(0.9f, 1f, 1f);
+            }
+            else
+            {
+                playerState.NameText.transform.localPosition = new Vector3(0.3384f, 0.0311f, -0.1f);
+                playerState.NameText.transform.localScale = new Vector3(0.9f, 1f, 1f);
+            }
+        }
+        catch { }
     }
 
     public static void PlayerNametags(PlayerPhysics playerPhysics)

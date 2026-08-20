@@ -23,9 +23,9 @@ public struct CheatToggles
     public static bool autoKill;
     public const float autoReportDefaultRange = 1.5f;
     public const float autoReportNormalMaxRange = 7f;
-    public const float autoReportAbsoluteMaxRange = 10000f;
+    public const float autoReportAnywhereRange = autoReportNormalMaxRange + 1f;
     public static bool autoReport;
-    public static float autoReportRange = autoReportNormalMaxRange + 1f;
+    public static float autoReportRange = autoReportAnywhereRange;
     public static bool confuseNow;
 
     // Roles

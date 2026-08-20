@@ -105,46 +105,6 @@ public static class HostCheats
         catch { }
     }
 
-    public static void IncreaseImpostors(int amount = 1)
-    {
-        if (!CheatToggles.noOptionsLimits)
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        var opt = GameOptionsManager.Instance?.currentNormalGameOptions;
-        if (opt != null) opt.NumImpostors += amount;
-    }
-
-    public static void DecreaseImpostors(int amount = 1)
-    {
-        if (!CheatToggles.noOptionsLimits)
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        var opt = GameOptionsManager.Instance?.currentNormalGameOptions;
-        if (opt != null) opt.NumImpostors -= amount;
-    }
-
-    public static void IncreasePlayerSpeed(float delta = 0.25f)
-    {
-        if (!CheatToggles.noOptionsLimits)
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        var opt = GameOptionsManager.Instance?.currentNormalGameOptions;
-        if (opt != null) opt.PlayerSpeedMod += delta;
-    }
-
-    public static void DecreasePlayerSpeed(float delta = 0.25f)
-    {
-        if (!CheatToggles.noOptionsLimits)
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        var opt = GameOptionsManager.Instance?.currentNormalGameOptions;
-        if (opt != null) opt.PlayerSpeedMod -= delta;
-    }
-
     public static int lobbyColorId;
     public static bool lobbyDiscoMode;
     private static float _lastLobbyColorUpdate;
@@ -676,15 +636,9 @@ public static class HostCheats
             if (!Utils.isHost) return;
             CheatToggles.noOptionsLimits = true;
 
-            var normalOptions = GameOptionsManager.Instance?.currentNormalGameOptions;
             var currentOptions = GameOptionsManager.Instance?.CurrentGameOptions;
-            if (normalOptions == null && currentOptions == null) return;
-
-            ApplyZeroCdToOptions(normalOptions);
-            if (!ReferenceEquals(normalOptions, currentOptions))
-            {
-                ApplyZeroCdToOptions(currentOptions);
-            }
+            if (currentOptions == null) return;
+            ApplyZeroCdToOptions(currentOptions);
         }
         catch { }
     }
@@ -697,7 +651,6 @@ public static class HostCheats
         SetOption(options, new[] { "ImpostorVision", "ImpostorVisionMod", "ImpostorVisionRange", "ImpostorVisionMultiplier" }, 9999f);
         SetOption(options, new[] { "CrewVision", "CrewMateVision", "CrewVisionMod", "CrewVisionRange", "CrewVisionMultiplier" }, 9999f);
         SetOption(options, new[] { "KillDistance", "KillRange", "KillDistanceSetting" }, "Medium");
-        SetOption(options, new[] { "PlayerSpeedMod", "PlayerSpeedMultiplier", "PlayerSpeed" }, 2.9f);
         SetOption(options, new[] { "EmergencyMeetings", "EmergencyMeetingCount", "NumEmergencyMeetings" }, 9999);
         SetOption(options, new[] { "EmergencyCooldown", "EmergencyCooldownSeconds", "EmergencyCooldownTime" }, 0f);
         SetOption(options, new[] { "DiscussionTime", "DiscussionTimeSeconds", "DiscussionTimeMinutes" }, 0f);

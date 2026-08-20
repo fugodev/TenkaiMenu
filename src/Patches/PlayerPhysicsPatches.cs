@@ -45,6 +45,7 @@ public static class PlayerPhysics_LateUpdate
         TenkaiPPMCheats.CopyLevelPPM();
         TenkaiPPMCheats.SetFakeRolePPM();
         TenkaiPPMCheats.SetFakeAlivePPM();
+        TenkaiPPMCheats.AutoReportDeadBodies();
 
         TracersHandler.DrawPlayerTracer(__instance);
 

@@ -55,68 +55,9 @@ public class HostOnlyTab : ITab
     {
         GUILayout.Label("Lobby Controls", GUIStylePreset.TabSubtitle);
 
-        // Impostor controls with +/- and apply
-        var normalOpt = GameOptionsManager.Instance?.currentNormalGameOptions;
-        int curImps = normalOpt != null ? normalOpt.NumImpostors : 0;
-
-        GUILayout.BeginHorizontal();
-        Color old = GUI.backgroundColor;
-        GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-        if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(20)))
-        {
-            HostCheats.DecreaseImpostors(1);
-        }
-        GUI.backgroundColor = old;
-
-        GUILayout.Label($"Impostors: {curImps}", GUILayout.Width(110));
-
-        GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-        if (GUILayout.Button("+", GUILayout.Width(30), GUILayout.Height(20)))
-        {
-            HostCheats.IncreaseImpostors(1);
-        }
-        GUI.backgroundColor = old;
-
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Apply", GUILayout.Width(80), GUILayout.Height(24)))
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        GUILayout.EndHorizontal();
-
-        GUILayout.Space(5);
-
-        // Speed controls with +/- and apply
-        float curSpeed = normalOpt != null ? normalOpt.PlayerSpeedMod : 1f;
-
-        GUILayout.BeginHorizontal();
-        GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-        if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(20)))
-        {
-            HostCheats.DecreasePlayerSpeed(0.25f);
-        }
-        GUI.backgroundColor = old;
-
-        GUILayout.Label($"Speed: {curSpeed:0.00}", GUILayout.Width(110));
-
-        GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f, 1f);
-        if (GUILayout.Button("+", GUILayout.Width(30), GUILayout.Height(20)))
-        {
-            HostCheats.IncreasePlayerSpeed(0.25f);
-        }
-        GUI.backgroundColor = old;
-
-        GUILayout.FlexibleSpace();
-        if (GUILayout.Button("Apply", GUILayout.Width(80), GUILayout.Height(24)))
-        {
-            CheatToggles.noOptionsLimits = true;
-        }
-        GUILayout.EndHorizontal();
-
-        GUILayout.Space(5);
-
         // Custom seeker count controls
         int curSeekers = CheatToggles.seekersCount;
+        Color old = GUI.backgroundColor;
         GUILayout.BeginHorizontal();
         GUI.backgroundColor = new Color(0.6f, 0.6f, 0.6f, 1f);
         if (GUILayout.Button("-", GUILayout.Width(30), GUILayout.Height(20)))
@@ -261,28 +202,6 @@ public class HostOnlyTab : ITab
     private void DrawHostControls()
     {
         GUILayout.Label("Lobby Controls", GUIStylePreset.TabSubtitle);
-
-        if (DrawGreenButton("Increase Impostors", HostControlButtonWidth))
-        {
-            HostCheats.IncreaseImpostors();
-        }
-
-        if (DrawGreenButton("Decrease Impostors", HostControlButtonWidth))
-        {
-            HostCheats.DecreaseImpostors();
-        }
-
-        GUILayout.Space(5);
-
-        if (DrawGreenButton("Increase Speed", HostControlButtonWidth))
-        {
-            HostCheats.IncreasePlayerSpeed();
-        }
-
-        if (DrawGreenButton("Decrease Speed", HostControlButtonWidth))
-        {
-            HostCheats.DecreasePlayerSpeed();
-        }
 
         if (DrawGreenButton("Apply 0cd Setting", HostControlButtonWidth))
         {

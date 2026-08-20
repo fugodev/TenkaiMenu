@@ -41,7 +41,6 @@ public static class TenkaiCheats
             PlayerControl.LocalPlayer.SetKillTimer(GameManager.Instance.LogicOptions.GetKillCooldown());
             ShipStatus.Instance.EmergencyCooldown = GameManager.Instance.LogicOptions.GetEmergencyCooldown();
             Camera.main.GetComponent<FollowerCamera>().Locked = false;
-            DestroyableSingleton<HudManager>.Instance.SetMapButtonEnabled(true);
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             ControllerManager.Instance.CloseAndResetAll();
         }
@@ -434,18 +433,13 @@ public static class TenkaiCheats
 
     private static void SendUpdateSystemToClient(AmongUsClient client, SystemTypes systemType, uint senderNetId, byte[] extraBytes, int targetClientId)
     {
-        if (client == null || ShipStatus.Instance == null) return;
-
         MessageWriter writer = client.StartRpcImmediately(ShipStatus.Instance.NetId, 35, SendOption.Reliable, targetClientId);
-        if (writer == null) return;
-
         writer.Write((byte)systemType);
         writer.WritePacked(senderNetId);
-        foreach (byte b in extraBytes)
+        foreach (byte value in extraBytes)
         {
-            writer.Write(b);
+            writer.Write(value);
         }
-
         client.FinishRpcImmediately(writer);
     }
 

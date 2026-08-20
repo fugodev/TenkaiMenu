@@ -13,8 +13,6 @@ public static class TenkaiPPMCheats
     private static bool _spectateActive;
     private static bool _teleportPlayerActive;
     private static bool _reportBodyActive;
-    private static readonly System.Collections.Generic.HashSet<int> _autoReported = new System.Collections.Generic.HashSet<int>();
-    private const float DefaultReportRange = 1.5f; // Approximate default Among Us report range
     private static bool _ejectPlayerActive;
     private static bool _voteKickActive;
     private static bool _copyOutfitActive;
@@ -23,58 +21,42 @@ public static class TenkaiPPMCheats
     private static bool _setFakeAliveActive;
     private static RoleTypes? _oldRole = null;
 
+    public static void AutoReportDeadBodies()
+    {
+        if (!CheatToggles.autoReport || PlayerControl.LocalPlayer == null || Utils.isMeeting ||
+            PlayerControl.LocalPlayer.Data == null || PlayerControl.LocalPlayer.Data.IsDead)
+        {
+            return;
+        }
+
+        try
+        {
+            bool reportFromAnywhere = CheatToggles.autoReportRange >= CheatToggles.autoReportAnywhereRange;
+
+            foreach (var bodyObject in GameObject.FindGameObjectsWithTag("DeadBody"))
+            {
+                var deadBody = bodyObject.GetComponent<DeadBody>();
+                if (deadBody == null || deadBody.Reported) continue;
+
+                if (!reportFromAnywhere &&
+                    Vector2.Distance(PlayerControl.LocalPlayer.transform.position, bodyObject.transform.position) > CheatToggles.autoReportRange)
+                {
+                    continue;
+                }
+
+                var bodyOwner = GameData.Instance.GetPlayerById(deadBody.ParentId);
+                if (bodyOwner == null || bodyOwner.Disconnected) continue;
+
+                // Mark before sending, matching MalumMenu and preventing duplicate RPCs.
+                deadBody.Reported = true;
+                PlayerControl.LocalPlayer.CmdReportDeadBody(bodyOwner);
+            }
+        }
+        catch { }
+    }
+
     public static void ReportBodyPPM()
     {
-        // Keep reported player IDs for the whole active game so dead bodies are only reported once.
-        // Clear the cache when the game is no longer active (for example, returning to lobby).
-        if (!Utils.isInGame)
-        {
-            _autoReported.Clear();
-        }
-
-        // Auto-report logic: report new bodies automatically when in range (or from anywhere if enabled)
-        if (CheatToggles.autoReport && PlayerControl.LocalPlayer != null && !Utils.isMeeting)
-        {
-            try
-            {
-                // Only report real, unreported dead bodies that still exist in the scene.
-                System.Collections.Generic.HashSet<int> activeUnreportedBodies = new System.Collections.Generic.HashSet<int>();
-                foreach (var bodyObject in GameObject.FindGameObjectsWithTag("DeadBody"))
-                {
-                    var deadBody = bodyObject.GetComponent<DeadBody>();
-                    if (deadBody == null || deadBody.Reported) continue;
-                    activeUnreportedBodies.Add(deadBody.ParentId);
-                }
-
-                // Do not auto-report if local player is dead
-                if (PlayerControl.LocalPlayer.Data != null && !PlayerControl.LocalPlayer.Data.IsDead)
-                {
-                    foreach (var player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player == null || player.Data == null) continue;
-                        if (!player.Data.IsDead || player.Data.Disconnected) continue;
-
-                        int pid = player.PlayerId;
-                        if (!_autoReported.Contains(pid) && !activeUnreportedBodies.Contains(pid)) continue;
-                        if (_autoReported.Contains(pid)) continue;
-
-                        float effectiveRange = CheatToggles.autoReportRange > CheatToggles.autoReportNormalMaxRange ? CheatToggles.autoReportAbsoluteMaxRange : CheatToggles.autoReportRange;
-                        float dist = Vector2.Distance(PlayerControl.LocalPlayer.transform.position, player.transform.position);
-                        if (dist > effectiveRange) continue;
-
-                        try
-                        {
-                            PlayerControl.LocalPlayer.CmdReportDeadBody(player.Data);
-                            _autoReported.Add(pid);
-                        }
-                        catch { }
-                    }
-                }
-            }
-            catch { }
-        }
-
-        // Manual report via player pick menu (unchanged)
         if (CheatToggles.reportBody)
         {
             if (!_reportBodyActive)

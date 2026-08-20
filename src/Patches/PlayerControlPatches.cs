@@ -123,51 +123,6 @@ public static class PlayerControl_RpcSyncSettings
     // for some settings that are out of the "original" valid range
     public static bool Prefix(PlayerControl __instance, byte[] optionsByteArray)
     {
-        // If custom impostor/speed limits are active, check if values exceed game limits
-        if (CheatToggles.noOptionsLimits && Utils.isHost)
-        {
-            try
-            {
-                var normalOpt = GameOptionsManager.Instance?.currentNormalGameOptions;
-                if (normalOpt != null)
-                {
-                    // Game default limits: Impostors 1-3, Speed 0.5-3.0
-                    bool impostorsOutOfBounds = normalOpt.NumImpostors > 3 || normalOpt.NumImpostors < 1;
-                    bool speedOutOfBounds = normalOpt.PlayerSpeedMod > 3.0f || normalOpt.PlayerSpeedMod < 0.5f;
-
-                    // Only reset and notify if values are outside game limits
-                    if (impostorsOutOfBounds || speedOutOfBounds)
-                    {
-                        // Reset to safe default values before syncing
-                        normalOpt.NumImpostors = 3;
-                        normalOpt.PlayerSpeedMod = 2.0f;
-
-                        // Add notifications
-                        try
-                        {
-                            ChatController chatController = DestroyableSingleton<ChatController>.Instance;
-                            if (chatController != null)
-                            {
-                                string chatMsg = "Because you changed Game/Role settings, custom Impostor/Speed values were reset. You can set them again.";
-                                chatController.AddChat(__instance, chatMsg, false);
-                            }
-                        }
-                        catch { }
-
-                        try
-                        {
-                            if (DestroyableSingleton<HudManager>.Instance != null)
-                            {
-                                DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage("<color=#ffff00>Custom Impostor/Speed values were reset. You can set them again.</color>");
-                            }
-                        }
-                        catch { }
-                    }
-                }
-            }
-            catch { }
-        }
-
         return !CheatToggles.noOptionsLimits;
     }
 }

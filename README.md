@@ -30,6 +30,7 @@
 
 | Mod Version | Among Us - Version | Link |
 |-------------|--------------------|------|
+| v1.0.2 | 18.0 ( 2026.08.18 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.2) |
 | v1.0.1 | 17.4 ( 2026.06.05 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.1) |
 | v1.0.0 | 17.4 ( 2026.06.05 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.0) |
 
@@ -175,4 +176,3 @@ Here are some other useful resources:
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
 
 This mod is not intended to be used in any manner that interferes with Innersloth's services, Innersloth's operation of Among Us, the integrity or availability of the game, or the normal gameplay experience of other players. The creator does not endorse, encourage, or condone using this mod to disrupt games, negatively affect other users, bypass rules or protections, or gain an unfair advantage in any setting where such use is prohibited. Any misuse is solely the responsibility of the user. Usage of this mod can violate the terms of service of Among Us, which may lead to punitive action. The creator is not responsible for any consequences you may face due to usage. Use at your own risk.
-

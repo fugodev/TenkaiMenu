@@ -141,12 +141,20 @@ public class MovementTab : ITab
         {
             GUILayout.Space(5);
             GUILayout.Label("Report range:", GUILayout.Width(100f));
-            CheatToggles.autoReportRange = GUILayout.HorizontalSlider(CheatToggles.autoReportRange, CheatToggles.autoReportDefaultRange, CheatToggles.autoReportNormalMaxRange + 1f, GUILayout.Width(230f));
+            CheatToggles.autoReportRange = GUILayout.HorizontalSlider(
+                CheatToggles.autoReportRange,
+                CheatToggles.autoReportDefaultRange,
+                CheatToggles.autoReportAnywhereRange,
+                GUILayout.Width(230f));
 
             GUILayout.BeginHorizontal();
             GUILayout.Label($"Default: {CheatToggles.autoReportDefaultRange:F1}", GUILayout.Width(120f));
             GUILayout.FlexibleSpace();
-            GUILayout.Label(CheatToggles.autoReportRange > CheatToggles.autoReportNormalMaxRange ? "Current: Anywhere" : $"Current: {CheatToggles.autoReportRange:F1}", GUILayout.Width(90f));
+            GUILayout.Label(
+                CheatToggles.autoReportRange >= CheatToggles.autoReportAnywhereRange
+                    ? "Current: Anywhere"
+                    : $"Current: {CheatToggles.autoReportRange:F1}",
+                GUILayout.Width(90f));
             GUILayout.EndHorizontal();
         }
     }

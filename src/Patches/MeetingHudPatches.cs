@@ -5,15 +5,24 @@ using Object = UnityEngine.Object;
 
 namespace TenkaiMenu;
 
+[HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetCosmetics))]
+public static class PlayerVoteArea_SetCosmetics
+{
+    public static void Postfix(PlayerVoteArea __instance, NetworkedPlayerInfo playerInfo)
+    {
+        TenkaiESP.ApplyMeetingNametag(__instance, playerInfo);
+    }
+}
+
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
 public static class MeetingHud_Update
 {
     public static List<int> votedPlayers = new List<int>();
 
-    // Prefix patch of MeetingHud.Update to constantly bloop new vote icons for each new vote being cast during the meeting
-    public static void Prefix(MeetingHud __instance)
+    // Run after the game's meeting update so custom rendering cannot block vote input or the meeting timer.
+    public static void Postfix(MeetingHud __instance)
     {
-        if (__instance.state < MeetingHud.VoteStates.Results)
+        try
         {
             foreach (var playerVoteArea in __instance.playerStates)
             {
@@ -56,16 +65,14 @@ public static class MeetingHud_Update
                 }
             }
 
-            // This is required to see who skipped the voting
             if (__instance.SkippedVoting)
             {
                 __instance.SkippedVoting.SetActive(CheatToggles.revealVotes);
             }
         }
-    }
-
-    public static void Postfix(MeetingHud __instance)
-    {
+        catch
+        {
+        }
         TenkaiESP.MeetingNametags(__instance);
 
         // Bugfix: NoClip staying active if meeting is called whilst climbing ladder
