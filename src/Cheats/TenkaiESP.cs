@@ -85,7 +85,7 @@ public static class TenkaiESP
         {
             foreach (var playerState in meetingHud.playerStates)
             {
-                var data = GameData.Instance.GetPlayerById(playerState.TargetPlayerId);
+                var data = GameData.Instance.GetPlayerById(playerState.PlayerId);
                 ApplyMeetingNametag(playerState, data);
             }
         }

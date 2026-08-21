@@ -410,7 +410,7 @@ public static class HostCheats
         if (MeetingHud.Instance != null)
         {
             MeetingHud.VoterState[] votes = Array.Empty<MeetingHud.VoterState>();
-            MeetingHud.Instance.RpcVotingComplete(votes, player.Data, false);
+            MeetingHud.Instance.RpcVotingComplete(votes, player.Data, false, false, 0);
             MeetingHud.Instance.RpcClose();
         }
     }

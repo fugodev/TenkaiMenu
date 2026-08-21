@@ -59,7 +59,7 @@ public static class TenkaiCheats
 
         if (Utils.isMeeting)
         {
-            MeetingHud.Instance.RpcVotingComplete(new Il2CppStructArray<MeetingHud.VoterState>(0L), null, true);
+            MeetingHud.Instance.RpcVotingComplete(new Il2CppStructArray<MeetingHud.VoterState>(0L), null, true, false, 0);
         }
 
         CheatToggles.skipMeeting = false;

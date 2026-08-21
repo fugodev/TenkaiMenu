@@ -1,4 +1,5 @@
 using HarmonyLib;
+using InnerNet;
 using System.Collections.Generic;
 using System.Linq;
 using Object = UnityEngine.Object;
@@ -19,35 +20,38 @@ public static class MeetingHud_Update
 {
     public static List<int> votedPlayers = new List<int>();
 
-    // Run after the game's meeting update so custom rendering cannot block vote input or the meeting timer.
-    public static void Postfix(MeetingHud __instance)
+    public static void Prefix(MeetingHud __instance)
     {
         try
         {
-            foreach (var playerVoteArea in __instance.playerStates)
+            if (__instance.state < MeetingHud.MeetingStates.Results)
             {
-                if (!playerVoteArea) continue;
-
-                var playerData = GameData.Instance.GetPlayerById(playerVoteArea.TargetPlayerId);
-
-                if (playerData != null && !playerData.Disconnected && playerVoteArea.VotedFor != PlayerVoteArea.HasNotVoted && playerVoteArea.VotedFor != PlayerVoteArea.MissedVote && playerVoteArea.VotedFor != PlayerVoteArea.DeadVote && !votedPlayers.Contains(playerVoteArea.TargetPlayerId))
+                foreach (var playerVoteArea in __instance.playerStates)
                 {
-                    votedPlayers.Add(playerVoteArea.TargetPlayerId);
+                    if (!playerVoteArea) continue;
 
-                    if (playerVoteArea.VotedFor != PlayerVoteArea.SkippedVote)
+                    var playerData = GameData.Instance.GetPlayerById(playerVoteArea.PlayerId);
+                    var votedForId = playerVoteArea.VotedForId;
+
+                    if (playerData != null && !playerData.Disconnected && votedForId != PlayerVoteArea.HasNotVoted && votedForId != PlayerVoteArea.MissedVote && votedForId != PlayerVoteArea.DeadVote && !votedPlayers.Contains(playerVoteArea.PlayerId))
                     {
-                        foreach (var votedForArea in __instance.playerStates)
+                        votedPlayers.Add(playerVoteArea.PlayerId);
+
+                        if (votedForId != PlayerVoteArea.SkippedVote)
                         {
-                            if (votedForArea.TargetPlayerId == playerVoteArea.VotedFor)
+                            foreach (var votedForArea in __instance.playerStates)
                             {
-                                __instance.BloopAVoteIcon(playerData, 0, votedForArea.transform);
-                                break;
+                                if (votedForArea.PlayerId == votedForId)
+                                {
+                                    __instance.BloopAVoteIcon(playerData, 0, votedForArea.transform);
+                                    break;
+                                }
                             }
                         }
-                    }
-                    else if (__instance.SkippedVoting)
-                    {
-                        __instance.BloopAVoteIcon(playerData, 0, __instance.SkippedVoting.transform);
+                        else if (__instance.SkippedVoting)
+                        {
+                            __instance.BloopAVoteIcon(playerData, 0, __instance.SkippedVoting.transform);
+                        }
                     }
                 }
             }
@@ -126,8 +130,6 @@ public static class MeetingHud_CheckForEndVoting
     // Prefix patch of MeetingHud.CheckForEndVoting to make the local player immune to being voted out
     public static bool Prefix(MeetingHud __instance)
     {
-        if (CheatToggles.voteLockEnabled) return false;
-
         if (!CheatToggles.voteImmune) return true; // We don't need to check whether we are host because this method only runs on the host's side
 
         if (!__instance.playerStates.All(ps => ps.AmDead || ps.DidVote)) return true;
@@ -148,12 +150,12 @@ public static class MeetingHud_CheckForEndVoting
             var playerState = __instance.playerStates[index];
             states[index] = new MeetingHud.VoterState
             {
-                VoterId = playerState.TargetPlayerId,
-                VotedForId = playerState.VotedFor
+                VoterId = playerState.PlayerId,
+                VotedForId = playerState.VotedForId
             };
         }
 
-        __instance.RpcVotingComplete(states, exiled, tie);
+        __instance.RpcVotingComplete(states, exiled, tie, false, 0);
 
         return false;
     }
