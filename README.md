@@ -30,6 +30,7 @@
 
 | Mod Version | Among Us - Version | Link |
 |-------------|--------------------|------|
+| v1.0.4 | 18.0 ( 2026.08.18 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.4) |
 | v1.0.3 | 18.0 ( 2026.08.18 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.3) |
 | v1.0.2 | 18.0 ( 2026.08.18 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.2) |
 | v1.0.1 | 17.4 ( 2026.06.05 ) | [Download](https://github.com/fugodev/TenkaiMenu/releases/tag/v1.0.1) |

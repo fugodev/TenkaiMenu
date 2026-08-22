@@ -122,8 +122,8 @@ public static class PingTracker_Update
 
         string TenkaiMenuTitle = Utils.GetGradientText("TenkaiMenu", new Color(1f, 0.15f, 0.15f), new Color(1f, 0.5f, 0.5f), Time.time * 0.25f);
         string byText = "<color=#FFFFFFFF> by </color>";
-        string fugodonTitle = Utils.GetGradientText("fugodon", new Color(1f, 0.85f, 0.1f), new Color(1f, 0.55f, 0f), Time.time * 0.25f);
-        string titleText = TenkaiMenuTitle + byText + fugodonTitle;
+        string fugodevTitle = Utils.GetGradientText("fugodev", new Color(1f, 0.85f, 0.1f), new Color(1f, 0.55f, 0f), Time.time * 0.25f);
+        string titleText = TenkaiMenuTitle + byText + fugodevTitle;
 
         if (AmongUsClient.Instance.IsGameStarted)
         {

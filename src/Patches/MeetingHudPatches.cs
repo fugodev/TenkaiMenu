@@ -22,6 +22,12 @@ public static class MeetingHud_Update
 
     public static void Prefix(MeetingHud __instance)
     {
+        if (!CheatToggles.revealVotes)
+        {
+            votedPlayers.Clear();
+            return;
+        }
+
         try
         {
             if (__instance.state < MeetingHud.MeetingStates.Results)
@@ -90,6 +96,8 @@ public static class MeetingHud_PopulateResults
     // Prefix patch of MeetingHud.PopulateResults to clear all vote icons before repopulating them for final results
     public static void Prefix(MeetingHud __instance)
     {
+        if (!CheatToggles.revealVotes) return;
+
         foreach (var votedForArea in __instance.playerStates)
         {
             if (!votedForArea) continue;
